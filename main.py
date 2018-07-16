@@ -10,6 +10,8 @@ client = discord.Client();
 token = config['token'];
 idmg = config['owner_id'];
 cor = "B0F7F1";
+user_id = None;
+msg_id = None;
 
 #Bot_Start
 
@@ -60,5 +62,38 @@ async def on_message(message):
         for emoji in emoji_list:
             await client.add_reaction(bot_msg, emoji)
             await asyncio.sleep(0.1)
+        
+    global msg_id
+    msg_id = bot_msg.id
+    global msg_user
+    msg_user = message.author
+
+#Role add(elo)
+
+@client.event
+async def on_reaction_add(reaction, user):
+    msg = reaction.message
+    emoji_list = ["🥉", "🥈", "🥇", "🔹", "💎", "🎓", "🏆"]
+    role_list = ["Bronze", "Prata", "Ouro", "Plantina", "Diamante", "Mestre", "Challenger"]
+    for x in range(len(emoji_list)):
+        if reaction.emoji == emoji_list[x] and msg.id == msg_id:
+            role = discord.utils.get(msg.server.roles, name=role_list[x])
+            await client.add_roles(user, role)
+            print("add")
+            break;
+
+#Role_remove(elo)
+
+@client.event
+async def on_reaction_remove(reaction, user):
+    msg = reaction.message
+    emoji_list = ["🥉", "🥈", "🥇", "🔹", "💎", "🎓", "🏆"]
+    role_list = ["Bronze", "Prata", "Ouro", "Plantina", "Diamante", "Mestre", "Challenger"]
+    for x in range(len(emoji_list)):
+        if reaction.emoji == emoji_list[x] and msg.id == msg_id:
+            role = discord.utils.get(msg.server.roles, name=role_list[x])
+            await client.remove_roles(user, role)
+            print("remove")
+            break;
 
 client.run(token)
